@@ -30,12 +30,7 @@ impl Config {
         }
 
         let in_file_path = args[1].clone();
-        let type_cfg = Self::get_type(&in_file_path);
-
-        if let Err(e) = type_cfg {
-            return Err(e);
-        }
-        let action = type_cfg.unwrap();
+        let action = Self::get_type(&in_file_path)?;
 
         let mut out_file_path = format!("{}.{}", String::from(R_RESULT), Self::get_ext(&action));
 
@@ -91,7 +86,7 @@ fn get_new_name(name: &String, suffix: i32, ext: &String) -> String {
     format!("{}_{}.{}", name, suffix_str, ext)
 }
 
-fn packunpack(input: &str, out: &str, out_type: OutFileType) -> Result<(), Error> {
+fn pack_unpack(input: &str, out: &str, out_type: OutFileType) -> Result<(), Error> {
     let input_file = File::open(input)?;
     let mut output_file = File::create_new(out)?;
 
@@ -118,7 +113,7 @@ pub fn run(config: Config) -> Result<(), &'static str> {
     let tmp = get_allowed_filename(&output);
     output = &tmp;
 
-    if let Err(err) = packunpack(input, output, config.out_file_type) {
+    if let Err(err) = pack_unpack(input, output, config.out_file_type) {
         println!("{}", err);
     }
 
